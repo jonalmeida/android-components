@@ -6,6 +6,7 @@ package mozilla.components.browser.state.action
 
 import android.graphics.Bitmap
 import mozilla.components.browser.state.state.BrowserState
+import mozilla.components.browser.state.state.Container
 import mozilla.components.browser.state.state.ContainerState
 import mozilla.components.browser.state.state.ContentState
 import mozilla.components.browser.state.state.CustomTabSessionState
@@ -598,6 +599,16 @@ sealed class ContainerAction : BrowserAction() {
      * Updates [BrowserState.containers] to register the given added [container].
      */
     data class AddContainerAction(val container: ContainerState) : ContainerAction()
+
+    /**
+     * Updates [BrowserState.containers] to register the given list of [containers].
+     */
+    data class AddContainersAction(val containers: List<ContainerState>) : ContainerAction()
+
+    /**
+     * Initializes the [BrowserState.containers] state.
+     */
+    object InitializeContainerState : ContainerAction()
 
     /**
      * Removes all state of the removed container from [BrowserState.containers].

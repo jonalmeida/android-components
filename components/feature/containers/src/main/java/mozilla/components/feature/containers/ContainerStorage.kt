@@ -20,7 +20,7 @@ import java.util.UUID
 /**
  * A storage implementation for organizing containers (contextual identities).
  */
-internal class ContainerStorage(context: Context) {
+class ContainerStorage(context: Context) {
 
     @VisibleForTesting
     internal var database: Lazy<ContainerDatabase> =
