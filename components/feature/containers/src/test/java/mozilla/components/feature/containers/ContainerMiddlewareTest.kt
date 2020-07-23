@@ -16,6 +16,7 @@ import mozilla.components.support.test.ext.joinBlocking
 import mozilla.components.support.test.mock
 import mozilla.components.support.test.robolectric.testContext
 import mozilla.components.support.test.whenever
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.spy
@@ -25,6 +26,14 @@ import org.mockito.Mockito.verify
 @RunWith(AndroidJUnit4::class)
 class ContainerMiddlewareTest {
 
+    // Test container
+    private val container = ContainerState(
+        contextId = "contextId",
+        name = "Personal",
+        color = ContainerState.Color.GREEN,
+        icon = ContainerState.Icon.CART
+    )
+
     @Test
     fun `container storage stores the provided container on add container action`() = runBlockingTest {
         val storage: ContainerStorage = mock()
@@ -32,12 +41,6 @@ class ContainerMiddlewareTest {
         val store = BrowserStore(
             initialState = BrowserState(),
             middleware = listOf(middleware)
-        )
-        val container = ContainerState(
-            contextId = "contextId",
-            name = "Personal",
-            color = ContainerState.Color.GREEN,
-            icon = ContainerState.Icon.CART
         )
 
         store.dispatch(ContainerAction.AddContainerAction(container)).joinBlocking()
@@ -58,33 +61,23 @@ class ContainerMiddlewareTest {
             initialState = BrowserState(),
             middleware = listOf(middleware)
         ))
-        // val containers = emptyList<Container>()
 
-        whenever(storage.getContainers()).thenReturn(flow { listOf(
-            ContainerState(
-                contextId = "contextId",
-                name = "Personal",
-                color = ContainerState.Color.GREEN,
-                icon = ContainerState.Icon.CART
-            )
-        ) })
+        whenever(storage.getContainers()).thenReturn(
+            flow {
+                emit(listOf(container))
+            }
+        )
 
         store.dispatch(ContainerAction.InitializeContainerState).joinBlocking()
 
         verify(storage).getContainers()
-        // assertTrue(store.state.containers.containsKey("contextId"))
+        assertTrue(store.state.containers.containsKey("contextId"))
     }
 
     @Test
     fun `container storage removes the provided container on remove container action`() = runBlockingTest {
         val storage: ContainerStorage = mock()
         val middleware = ContainerMiddleware(testContext, coroutineContext, storage)
-        val container = ContainerState(
-            contextId = "contextId",
-            name = "Personal",
-            color = ContainerState.Color.GREEN,
-            icon = ContainerState.Icon.CART
-        )
         val store = BrowserStore(
             initialState = BrowserState(
                 containers = mapOf(
